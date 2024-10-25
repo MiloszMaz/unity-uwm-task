@@ -8,23 +8,18 @@ public class lab03_Zadanie3 : MonoBehaviour
 
     public float distance = 10;
 
-    private float firstStartPositionX;
-
     private Vector3 startPosition;
-    private bool isReturned = false;
-
-    private int rotatedCount = 0;
 
     private Vector3[] directions;
 
     private int currentEdge = 0;
 
+    private bool isTurning = false;
+
 
     void Start()
     {
         startPosition = transform.position;
-
-        firstStartPositionX = startPosition.x;
 
         directions = new Vector3[] {
             Vector3.right,
@@ -36,38 +31,35 @@ public class lab03_Zadanie3 : MonoBehaviour
 
     void Update()
     {
-        float toPositionX = startPosition.x + distance;
-
-        float currentPositionX = transform.position.x;
-
-        
-
-        if (!(rotatedCount >= 4 && currentPositionX <= firstStartPositionX))
+        if (!isTurning)
         {
-            transform.Translate(directions[currentEdge] * speed * Time.deltaTime);
-
-            if (currentPositionX >= toPositionX)
-            {
-                makeRotate();
-            }
-
-            Debug.Log("Blokada 1: " + rotatedCount + " " + currentPositionX + " " + firstStartPositionX);
+            move();
         }
-
-        Debug.Log("Blokada 2: " + rotatedCount + " " + currentPositionX + " " + firstStartPositionX);
-
+        else
+        {
+            rotate();
+        }
     }
 
-    void makeRotate()
+    void move()
     {
-        transform.Rotate(0, 90, 0);
+        transform.Translate(directions[currentEdge] * speed * Time.deltaTime);
+        float movedDistance = Vector3.Distance(startPosition, transform.position);
 
-        startPosition = transform.position;
+        if (movedDistance >= distance)
+        {
+            isTurning = true;
+            startPosition = transform.position;
+        }
+    }
 
+    void rotate()
+    {
+        transform.Rotate(Vector3.up, 90 * Time.deltaTime);
+
+        isTurning = false;
         currentEdge = (currentEdge + 1) % 4;
 
-        rotatedCount++;
-
-        Debug.Log("rotatedCount: " + rotatedCount);
+        Debug.LogWarning("Obrot!");
     }
 }
